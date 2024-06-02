@@ -1,15 +1,30 @@
-export const AddTask = ({ tasklist, setTasklist }) => {
+export const AddTask = ({ tasklist, setTasklist, task, setTask }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    const date = new Date();
+    if (task.id) {
+      const date = new Date();
+      const updateTasklist = tasklist.map((todo) =>
+        task.id === todo.id
+          ? {
+              id: task.id,
+              name: e.target.task.value,
+              time: `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`,
+            }
+          : todo
+      );
+      setTasklist(updateTasklist);
+      setTask({});
+    } else {
+      const date = new Date();
 
-    const newTask = {
-      id: date.getTime(),
-      name: e.target.task.value,
-      time: `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`,
-    };
-    setTasklist([...tasklist, newTask]);
-    e.target.task.value = '';
+      const newTask = {
+        id: date.getTime(),
+        name: e.target.task.value,
+        time: `${date.toLocaleTimeString()} ${date.toLocaleDateString()}`,
+      };
+      setTasklist([...tasklist, newTask]);
+      setTask({});
+    }
   };
   return (
     <section className="addTask">
@@ -20,7 +35,10 @@ export const AddTask = ({ tasklist, setTasklist }) => {
           autoComplete="off"
           placeholder="add a new Task"
           maxLength="25"
+          value={task.name || ''}
+          onChange={(e) => setTask({ ...task, name: e.target.value })}
         />
+
         <button type="submit">Add</button>
       </form>
     </section>
